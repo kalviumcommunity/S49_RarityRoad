@@ -33,6 +33,9 @@ router.put('/update/:id', (req, res) => {
 });
 
 router.delete('/delete/:id', (req, res) => {
+
+
+    
     const id = parseInt(req.params.id);
     const index = data.findIndex(car => car.id === id);
     if (index !== -1) {
