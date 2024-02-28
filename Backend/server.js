@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors')
 const bodyParser = require('body-parser'); // middleware for parsing request bodies
 const app = express();
 require('dotenv').config();
-const port = process.env.PUBLIC_PORT || 3000;
+const port = 3005;
+const rarityRoadModel = require("./models/carinfo.js")
 
 // Import CRUD routes
 const router = require("./routes.js");
@@ -13,10 +15,13 @@ app.use(bodyParser.json());
 
 app.use("/crud",router)
 
+app.use(cors())
+app.use(express.json())
+
 // Connect to MongoDB
 const startDatabase = async () => {
   try {
-    await mongoose.connect(process.env.MONGOURL)
+    await mongoose.connect(process.env.MONGODB_URL)
     console.log('Connected to MongoDB');
   } catch (err) {
     console.error('Error connecting to MongoDB:', err);
@@ -57,6 +62,13 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
+
+app.get('/carsname',(req,res)=>{
+  rarityRoadModel.find()
+  .then(carsinfo => res.json(carsinfo))
+  .catch(err => res.json(err))
+});
+
 // Start the server
 if (require.main === module) {
   app.listen(port, async () => {
@@ -64,5 +76,7 @@ if (require.main === module) {
     console.log(`Server running on PORT: ${port}`);
   });
 }
+
+
 
 module.exports = app;
