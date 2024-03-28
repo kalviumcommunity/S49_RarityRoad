@@ -5,7 +5,8 @@ const bodyParser = require('body-parser'); // middleware for parsing request bod
 const app = express();
 require('dotenv').config();
 const port = 3005;
-const rarityRoadModel = require("./models/carinfo.js")
+const rarityRoadModel = require("./models/carinfo.js");
+const usersModel = require("./models/users.js")
 
 // Import CRUD routes
 const router = require("./routes.js");
@@ -68,6 +69,28 @@ app.get('/carsname',(req,res)=>{
   .then(carsinfo => res.json(carsinfo))
   .catch(err => res.json(err))
 });
+
+
+
+app.post('/postUserData', async (req,res) =>{
+  let x= req.body
+  console.log(x)
+    let a =await usersModel.create({
+      username: x.username,
+      email: x.email,    
+      password: x.password
+    })
+   .then(users => res.json(users))
+   .catch(err => res.json(err))
+   console.log(a)
+ })
+
+app.get('/getUserData',async(req,res) =>{
+  let b = await usersModel.find()
+  .then(users => res.json(users))
+  .catch(err => res.json(err))
+  console.log(b)
+})
 
 // Start the server
 if (require.main === module) {
