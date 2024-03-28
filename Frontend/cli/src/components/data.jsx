@@ -1,19 +1,28 @@
 import React from 'react'
+import axios from "axios"
+import { useState, useEffect } from "react";
 
 function Data() {
+  const [data, setData] = useState();
+  useEffect(()=>{
+    axios.get('http://localhost:3005/carsname')
+    .then(res => {setData(res.data)})
+    .catch((err)=>console.log("Error in fetching data"))
+    },[])
+  
   return (
-    <div className="card">
-      <div className="card-body">
-        <h5 className="car-title">Hundai creta</h5>
-        <p className="car-text">Price: Rs.200000</p>
-        <p className="car-text">Color: Red</p>
-        <p className="car-text">Rating: 5</p>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">Review: was good car</li>
-          <li className="list-group-item">Review: color was not good</li>
-        </ul>
-      </div>
-    </div>
+    <>
+      <div>{data && data.map((item)=>{
+        return(
+          <div key={item._id}>
+            <h2 >{item.Company}</h2> <hr />
+            <h2>{item.model}</h2>
+            <h2>{item.year}</h2>
+          </div>
+        )
+      })}</div>
+    </>
+
   )
 }
 
