@@ -91,6 +91,32 @@ app.get('/getUserData',async(req,res) =>{
   .catch(err => res.json(err))
   console.log(b)
 })
+app.delete('/deleteUsers/:id', async (req, res) => {
+  const userId = req.params.id;
+  try {
+      const deletedUser = await usersModel.findByIdAndDelete(userId);
+      res.json(deletedUser);
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/updateUsers/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log(req.body,id);
+  try {
+      const { username, email, password } = req.body; // Extract places from the request body
+
+      const updatedUser = await usersModel.findByIdAndUpdate(
+          id,
+          req.body , // Add place and experiences to visitedPlaces array using $addToSet
+          { new: true }
+      );
+      res.json(updatedUser);
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
 
 // Start the server
 if (require.main === module) {
