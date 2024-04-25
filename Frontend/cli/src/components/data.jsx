@@ -15,9 +15,9 @@ function Data() {
       <div>{data && data.map((item)=>{
         return(
           <div key={item._id}>
-            <h2 >{item.Company}</h2> <hr />
-            <h2>{item.model}</h2>
-            <h2>{item.year}</h2>
+            <h2 >company :{item.Company}</h2>
+            <h2> model:{item.model}</h2>
+            <h2>year:{item.year}</h2>
           </div>
         )
       })}</div>
