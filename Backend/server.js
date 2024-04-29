@@ -6,7 +6,7 @@ const app = express();
 require('dotenv').config();
 const port = 3005;
 const rarityRoadModel = require("./models/carinfo.js");
-const usersModel = require("./models/users.js")
+const  {usersModel, UserSchema  } = require("./models/users.js")
 
 // Import CRUD routes
 const router = require("./routes.js");
@@ -117,7 +117,20 @@ app.put('/updateUsers/:id', async (req, res) => {
       res.status(500).json({ error: err.message });
   }
 });
+app.post("/login", async (req, res) => {
+  try {
+      // Assuming your login logic involves checking credentials
+      const { email, password } = req.body;
+      
+      // Find the user in the MongoDB database
+      const user = await usersModel.findOne({ email, password });
 
+      
+      res.json({ message: 'Login successful', user });
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
 // Start the server
 if (require.main === module) {
   app.listen(port, async () => {
