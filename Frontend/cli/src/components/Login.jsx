@@ -1,83 +1,83 @@
-import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import './Login.css';
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [local,setLocal] = useState(localStorage.getItem('localuser'))
-  const navigate = useNavigate()
+export default function Login() {
+  const [field, setField] = useState({
+    email: "",
+    password: "",
+  });
+  const [submitted, setSubmit] = useState(false);
+  const [validate, setValidation] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmit(true);
+    setLoading(true);
+
     try {
-      // Send a request to retrieve user data based on the entered email
-      const response = await axios.get('http://localhost:3005/getUserData');
-      
-
-      console.log(response.data,"fdfdf");
-      // Check if a user with the entered email exists in the response data
-      const userData = response.data.filter((elem)=>{
-           return  elem.email == email && elem.password==password;
+      const response = await axios.post("http://localhost:3005/login", {
+        email: field.email,
+        password: field.password,
+        action: "login",
       });
-      console.log(userData)
-      if(userData.length>0){
-        console.log("yess",userData[0].Name)
-        localStorage.setItem('localuser', userData[0].Name);
-        navigate('/data')
-
-      }else{
-        console.log("no")                
-
-        alert("Please enter the correct credentials")
-      }
-
-
+      if (response.data.message === "Login successful") {
+        setValidation(true);
+        // Set the token value in a cookie
+        navigate("/data");
+      } 
     } catch (err) {
-      // Handle any errors that occur during the request
-      setError('Error logging in. Please try again.');
+      setValidation(false);
+      setError("Email or Password is invalid");
       console.error(err);
     }
   };
 
-  const handleLogOut = () => {
-    localStorage.removeItem('localuser'); // Remove the user's name from local storage
-    navigate('/');
-  };
-
-  const isLoggedIn = !!localStorage.getItem('localuser');
-
-
   return (
     <div>
-    {isLoggedIn ? ( // If the user is logged in, show the sign-out button
-      <button type="button" onClick={handleLogOut}>Sign Out</button>
-    ): (
-       (
-        <div>
-          <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Email:</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </div>
-          <div>
-            <label>Password:</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </div>
-          {error && <div>{error}</div>}
-          <button type="submit">Login</button>
-          <Link to="/" ><button type="button">Close</button></Link>
+      <div className="form-container">
+        <form className="register-form" onSubmit={handleSubmit}>
+          {submitted && !validate && error && (
+            <div className="error-message">{error}</div>
+          )}
+
+          <input
+            id="email"
+            className="form-field"
+            type="text"
+            placeholder="Email"
+            name="email"
+            value={field.email}
+            onChange={(e) => {
+              setField({ ...field, email: e.target.value });
+            }}
+          />
+          {submitted && !field.email && (
+            <span>Please enter your Email</span>
+          )}
+
+          <input
+            id="password"
+            className="form-field"
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={field.password}
+            onChange={(e) => {
+              setField({ ...field, password: e.target.value });
+            }}
+          />
+          {submitted && !field.password && (
+            <span>Please enter your password</span>
+          )}
+          <button className="form-field" type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Log In"}
+          </button>
         </form>
-        </div>
-      )
-    )}
+      </div>
     </div>
   );
-
-
 }
-
-export default Login;
