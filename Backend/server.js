@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors')
 const bodyParser = require('body-parser'); // middleware for parsing request bodies
 const app = express();
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const port = 3005;
 const rarityRoadModel = require("./models/carinfo.js");
@@ -18,6 +19,7 @@ app.use("/crud",router)
 
 app.use(cors())
 app.use(express.json())
+app.use(cookieParser());
 
 // Connect to MongoDB
 const startDatabase = async () => {
@@ -125,12 +127,20 @@ app.post("/login", async (req, res) => {
       // Find the user in the MongoDB database
       const user = await usersModel.findOne({ email, password });
 
+      if (!user) {
+          return res.status(401).json({ error: 'Invalid credentials' });
+      }
       
-      res.json({ message: 'Login successful', user });
+      // Set a cookie with the cookie
+      res.cookie('cookie', cookie, { httpOnly: true });
+
+      res.json({ message: 'Login successful', user , cookie });
   } catch (err) {
       res.status(500).json({ error: err.message });
   }
 });
+
+
 // Start the server
 if (require.main === module) {
   app.listen(port, async () => {

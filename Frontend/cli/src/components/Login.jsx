@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie"; // Import the Cookies object
 
 export default function Login() {
   const [field, setField] = useState({
@@ -22,20 +23,26 @@ export default function Login() {
       const response = await axios.post("http://localhost:3005/login", {
         email: field.email,
         password: field.password,
-        action: "login",
+        action: "login", // Add this line to specify the action
       });
+
+      // Assuming your server returns a success message on successful login
       if (response.data.message === "Login successful") {
         setValidation(true);
         // Set the token value in a cookie
+        Cookies.set("token", response.data.cookie, { expires: 1 });
+        setError("");
         navigate("/data");
-      } 
+      } else {
+        setValidation(false);
+        setError("Invalid credentials");
+      }
     } catch (err) {
       setValidation(false);
       setError("Email or Password is invalid");
       console.error(err);
     }
   };
-
   return (
     <div>
       <div className="form-container">
