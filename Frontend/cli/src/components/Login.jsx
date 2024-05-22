@@ -31,6 +31,7 @@ export default function Login() {
         setValidation(true);
         // Set the token value in a cookie
         Cookies.set("email", response.data.email, { expires: 1, secure: true, sameSite: 'strict' });
+        Cookies.set("token",response.data.token)
         setError("");
         navigate("/data");
       } else {
