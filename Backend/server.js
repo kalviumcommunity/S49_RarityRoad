@@ -1,4 +1,5 @@
 const express = require('express');
+
 const mongoose = require('mongoose');
 const cors = require('cors')
 const bodyParser = require('body-parser'); // middleware for parsing request bodies
@@ -41,29 +42,16 @@ const stopDatabase = async () => {
   }
 };
 
-// Check MongoDB connection status
-const isConnected = () => {
-  return mongoose.connection.readyState === 1;
-};
 
-// Ping route to check server status
-app.get('/ping', (req, res) => {
+
+// define the ping route with the response in JSON
+app.get('/ping', (req,res)=>{
   res.json({
-    message: 'Server is running',
-    database: isConnected() ? 'connected' : 'disconnected',
+    message: 'pong'
   });
 });
 
-// Handle shutdown signals
-process.on('SIGINT', async () => {
-  await stopDatabase();
-  process.exit(0);
-});
 
-process.on('SIGTERM', async () => {
-  await stopDatabase();
-  process.exit(0);
-});
 
 
 app.get('/carsname',(req,res)=>{
@@ -141,14 +129,12 @@ app.post("/login", async (req, res) => {
 });
 
 
-// Start the server
+
 if (require.main === module) {
-  app.listen(port, async () => {
-    await startDatabase();
-    console.log(`Server running on PORT: ${port}`);
+  app.listen(port, () => {
+    console.log(`🚀 server running on PORT: ${port}`);
   });
 }
-
 
 
 module.exports = app;
