@@ -132,9 +132,9 @@ app.post("/login", async (req, res) => {
       }
       
       // Set a cookie with the cookie
-      res.cookie('cookie', cookie, { httpOnly: true });
+      res.cookie('cookie', email, { httpOnly: true });
 
-      res.json({ message: 'Login successful', user , cookie });
+      res.json({ message: 'Login successful', user , email });
   } catch (err) {
       res.status(500).json({ error: err.message });
   }

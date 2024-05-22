@@ -30,7 +30,7 @@ export default function Login() {
       if (response.data.message === "Login successful") {
         setValidation(true);
         // Set the token value in a cookie
-        Cookies.set("token", response.data.cookie, { expires: 1 });
+        Cookies.set("email", response.data.email, { expires: 1, secure: true, sameSite: 'strict' });
         setError("");
         navigate("/data");
       } else {
@@ -39,10 +39,17 @@ export default function Login() {
       }
     } catch (err) {
       setValidation(false);
-      setError("Email or Password is invalid");
+      if (err.response && err.response.status === 401) {
+        setError("Invalid email or password");
+      } else {
+        setError("An error occurred. Please try again later.");
+      }
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div>
       <div className="form-container">
@@ -62,9 +69,7 @@ export default function Login() {
               setField({ ...field, email: e.target.value });
             }}
           />
-          {submitted && !field.email && (
-            <span>Please enter your Email</span>
-          )}
+          {submitted && !field.email && <span>Please enter your Email</span>}
 
           <input
             id="password"
