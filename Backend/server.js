@@ -1,4 +1,5 @@
 const express = require('express');
+
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -40,29 +41,16 @@ const stopDatabase = async () => {
   }
 };
 
-// Check MongoDB connection status
-const isConnected = () => {
-  return mongoose.connection.readyState === 1;
-};
 
-// Ping route to check server status
-app.get('/ping', (req, res) => {
+
+// define the ping route with the response in JSON
+app.get('/ping', (req,res)=>{
   res.json({
-    message: 'Server is running',
-    database: isConnected() ? 'connected' : 'disconnected',
+    message: 'pong'
   });
 });
 
-// Handle shutdown signals
-process.on('SIGINT', async () => {
-  await stopDatabase();
-  process.exit(0);
-});
 
-process.on('SIGTERM', async () => {
-  await stopDatabase();
-  process.exit(0);
-});
 
 // Routes
 app.use("/crud", router);
@@ -158,12 +146,12 @@ app.get('/protected-route', verifyToken, (req, res) => {
   res.json({ message: 'Protected route accessed', email: req.email });
 });
 
-// Start the server
+
 if (require.main === module) {
-  app.listen(port, async () => {
-    await startDatabase();
-    console.log(`Server running on PORT: ${port}`);
+  app.listen(port, () => {
+    console.log(`🚀 server running on PORT: ${port}`);
   });
 }
 
 module.exports = app;
+
